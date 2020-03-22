@@ -108,6 +108,21 @@ done
 # Split the chosen line into ID and serial number.
 read -r id sn unused <<<"$choice"
 
+# Move the recovery to /tmp delete everything in the current directory then bring it back.
+teleport(){
+if
+mv $FILE /tmp/
+sleep 2s
+then
+rm -rf *.*
+mv /tmp/$FILE .
+sleep 2s
+else
+exit 1
+fi
+}
+
+
 # Here we partition the drive and dd the raw image to it.
 partformat(){
 if
@@ -121,11 +136,7 @@ sleep 3s
     sleep 3s
 echo -e "\e[3mCopying image to usb-drive!\e[0m"
 dd bs=8M if="$PWD/base.hfs" of=$(echo /dev/$id)2 status=progress oflag=sync
-mv $FILE /tmp/
-rm -rf *.*
-mv /tmp/$FILE .
-
-
+teleport
 then
 umount $(echo /dev/$id?*) > /dev/null 2>&1 || :
 sleep 3s
@@ -138,7 +149,7 @@ while true; do
     read -p "$(echo -e ${YELLOW}"Driver ($id) will be erased, do you wish to continue (y/n)? "${NOCOLOR})" yn
     case $yn in
         [Yy]* ) partformat; break;;
-        [Nn]* ) rm -rf *.hfs; exit;;
+        [Nn]* ) teleport; exit;;
         * ) echo -e "${YELLOW}Please answer yes or no."${NOCOLOR};;
     esac
 done
