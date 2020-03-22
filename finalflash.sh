@@ -146,7 +146,7 @@ fi
 }
 
 while true; do
-    read -p "$(echo -e ${YELLOW}"Driver ($id) will be erased, do you wish to continue (y/n)? "${NOCOLOR})" yn
+    read -p "$(echo -e ${YELLOW}"Drive ($id) will be erased, do you wish to continue (y/n)? "${NOCOLOR})" yn
     case $yn in
         [Yy]* ) partformat; break;;
         [Nn]* ) teleport; exit;;
