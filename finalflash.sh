@@ -122,23 +122,21 @@ exit 1
 fi
 }
 
-
 # Here we partition the drive and dd the raw image to it.
 partformat(){
 if
-  umount $(echo /dev/$id?*) > /dev/null 2>&1 || :
+  umount $(echo /dev/$id?*) 
 sleep 3s
-    sgdisk --zap-all /dev/$id > /dev/null 2>&1
-    sgdisk /dev/$id --new=0:0:+300MiB -t 0:ef00
+    sgdisk --zap-all /dev/$id 
+    sgdisk /dev/$id --new=0:0:+300MiB -t 0:ef00 
     partprobe $(echo /dev/$id?*)
-    sgdisk -e /dev/$id --new=0:0:+7000MiB -t 0:af00
+    sgdisk -e /dev/$id --new=0:0:+7000MiB -t 0:af00 
     partprobe $(echo /dev/$id?*)
     sleep 3s
-echo -e "\e[3mCopying image to usb-drive!\e[0m"
 dd bs=8M if="$PWD/base.hfs" of=$(echo /dev/$id)2 status=progress oflag=sync
 teleport
 then
-umount $(echo /dev/$id?*) > /dev/null 2>&1 || :
+umount $(echo /dev/$id?*) 
 sleep 3s
 else
   exit 1
@@ -148,7 +146,7 @@ fi
 while true; do
     read -p "$(echo -e ${YELLOW}"Drive ($id) will be erased, do you wish to continue (y/n)? "${NOCOLOR})" yn
     case $yn in
-        [Yy]* ) partformat; break;;
+        [Yy]* ) echo -e "\e[3mCopying image to Drive Be Patient...\e[0m"; partformat > /dev/null 2>&1 || :; break;;
         [Nn]* ) teleport; exit;;
         * ) echo -e "${YELLOW}Please answer yes or no."${NOCOLOR};;
     esac
