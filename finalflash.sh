@@ -146,7 +146,7 @@ fi
 while true; do
     read -p "$(echo -e ${YELLOW}"Drive ($id) will be erased, do you wish to continue (y/n)? "${NOCOLOR})" yn
     case $yn in
-        [Yy]* ) echo -e "\e[3mCopying image to Drive Be Patient...\e[0m"; partformat > /dev/null 2>&1 || :; break;;
+        [Yy]* ) echo -e "\e[3mCopying Image To Drive Be Patient...\e[0m"; partformat > /dev/null 2>&1 || :; break;;
         [Nn]* ) teleport; exit;;
         * ) echo -e "${YELLOW}Please answer yes or no."${NOCOLOR};;
     esac
