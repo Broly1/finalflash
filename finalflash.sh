@@ -119,7 +119,7 @@ partformat(){
   sgdisk /dev/$id --new=0:0:+300MiB -t 0:ef00
   partprobe $(echo /dev/$id?*)
   then
-    sgdisk -e /dev/$id --new=0:0:+7000MiB -t 0:af00
+    sgdisk -e /dev/$id --new=0:0: -t 0:af00
     partprobe $(echo /dev/$id?*)
     sleep 3s
   else
