@@ -19,6 +19,15 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
+banner() {
+  msg="# $* #"
+  edge=$(echo "$msg" | sed 's/./#/g')
+  echo "$edge"
+  echo "$msg"
+  echo "$edge"
+}
+banner "WELCOME TO FINALFLASH!!"
+
 ImportantTools(){
   echo -e "Installing p7zip wget and curl!"
   sleep 3s
@@ -195,7 +204,8 @@ done
 read -r id sn unused <<<"$choice"
 
 while true; do
-  read -p "$(echo -e "${YELLOW}Drive ($id) will be erased, do you wish to continue (y/n)? "${NOCOLOR})" yn
+  read -p "$(echo -e "${YELLOW}Drive ${RED}$id${NOCOLOR} ${YELLOW}will be erased, wget, curl and p7zip will be installed
+do you wish to continue (y/n)? "${NOCOLOR})" yn
   case $yn in
     [Yy]* ) ImportantTools; partformat > /dev/null 2>&1 || :; burning; InstallOC; break;;
     [Nn]* ) exit;;
