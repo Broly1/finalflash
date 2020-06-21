@@ -26,6 +26,7 @@ banner() {
   echo "$msg"
   echo "$edge"
 }
+
 banner "WELCOME TO FINALFLASH!!"
 
 ImportantTools(){
