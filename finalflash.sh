@@ -8,7 +8,6 @@
 # dependency gibmacos https://github.com/corpnewt/gibMacOS
 
 RED="\033[1;31m\e[3m"
-YELLOW="\033[01;33m\e[3m"
 NOCOLOR="\e[0m\033[0m"
 
 set -e
@@ -19,17 +18,23 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
+print() { echo -e   -- "$1\n"; }
+log() { echo -e   -- "\033[37m LOG: $1 \033[0m\n"; }
+success() { echo -e   -- "\033[32m SUCCESS: $1 \033[0m\n"; }
+warning() { echo -e   -- "\033[33m WARNING: $1 \033[0m\n"; }
+error() { echo -e   -- "\033[31m ERROR: $1 \033[0m\n"; }
+heading() { echo -e   -- "   \033[1;30;42m $1 \033[0m\n\n"; }
 banner() {
-  msg="# $* #"
-  edge=$(echo "$msg" | sed 's/./#/g')
-  echo "$edge"
-  echo "$msg"
-  echo "$edge"
+	clear
+	echo "  ############################ "
+	echo " # WELCOME TO FINALFLASH    # "
+	echo "############################ "
+	echo " "
+	echo " "
 }
 
-banner "WELCOME TO FINALFLASH!!"
-
 ImportantTools(){
+    banner
   echo -e "Installing p7zip wget and curl!"
   sleep 3s
 
@@ -70,9 +75,10 @@ ImportantTools(){
 
   # Simple menu to select the Downloaded version of macOS only usefull if you download
   # multiple versions.
+  banner
   cd "$(dirname "$(find ./ -name "publicrelease")")"
   cd publicrelease
-  echo -e "${YELLOW}Please select the downloaded macOS image!${NOCOLOR}"
+  echo -e "Please select the downloaded macOS image!"
   if select d in */; do test -n "$d" && break; echo -e "${RED}>>> Invalid Selection!${NOCOLOR}"; done
   then
 
@@ -82,20 +88,20 @@ ImportantTools(){
     FILE=(RecoveryHDMetaDmg.pkg)
     FILE1=(*.RecoveryHDUpdate.pkg)
     if [ -f "$FILE" ]; then
-      echo "Using $FILE"
+      echo "extracting $FILE..."
       rm -rf *.hfs *.dmg
-      7z e -txar $FILE *.dmg
-      7z e *.dmg */Base*.dmg
-      7z e -tdmg Base*.dmg *.hfs
+      7z e -txar $FILE -bsp0 -bso0 *.dmg
+      7z e *.dmg -bsp0 -bso0 */Base*.dmg
+      7z e -tdmg Base*.dmg -bsp0 -bso0 *.hfs
       mv *.hfs base.hfs
       sleep 3s
 
     elif [ -f "$FILE1" ]; then
       rm -rf *.hfs *.dmg
       mv $FILE1 $FILE
-      7z e -txar $FILE *.dmg
-      7z e *.dmg */Base*.dmg
-      7z e -tdmg Base*.dmg *.hfs
+      7z e -txar $FILE -bsp0 -bso0 *.dmg
+      7z e *.dmg -bsp0 -bso0 */Base*.dmg
+      7z e -tdmg Base*.dmg -bsp0 -bso0 *.hfs
       mv *.hfs base.hfs
       sleep 3s
     else
@@ -137,6 +143,7 @@ partformat(){
   fi
 }
 burning(){
+    banner
   if
   echo -e "Copying Image To Drive Be Patient..."
   dd bs=8M if="$PWD/base.hfs" of=$(echo /dev/$id)2 status=progress oflag=sync
@@ -150,6 +157,7 @@ burning(){
 }
 
 InstallOC(){
+    banner
   # Format the EFI partition for opencore
   # and mount it in the /mnt.
   if
@@ -173,7 +181,7 @@ InstallOC(){
   | cut -d'"' -f4 \
   | wget -qi -
   then
-    7z x *RELEASE.zip -o/mnt/
+    7z x *RELEASE.zip -bsp0 -bso0 -o/mnt/
   else
     exit 1
   fi
@@ -183,10 +191,10 @@ InstallOC(){
   umount $(echo /dev/$id)1
   mount -t vfat  $(echo /dev/$id)1 /mnt/ -o rw,umask=000
   sleep 3s
-
+banner
   echo -e "Installation finished, open /mnt and edit oc for your machine!!"
 }
-
+banner
 # Print disk devices
 # Read command output line by line into array ${lines [@]}
 # Bash 3.x: use the following instead:
@@ -195,7 +203,7 @@ readarray -t lines < <(lsblk --nodeps -no name,size | grep "sd")
 
 # Prompt the user to select the drive.
 echo -e "${RED}WARNING: THE SELECTED DRIVE WILL BE ERASED!!!${NOCOLOR}"
-echo -e "${YELLOW}Please select the usb-drive!${NOCOLOR}"
+echo -e "Please select the usb-drive!"
 select choice in "${lines[@]}"; do
   [[ -n $choice ]] || { echo -e "${RED}>>> Invalid Selection!${NOCOLOR}" >&2; continue; }
   break # valid choice was made; exit prompt.
@@ -203,10 +211,10 @@ done
 
 # Split the chosen line into ID and serial number.
 read -r id sn unused <<<"$choice"
-
+banner
 while true; do
-  read -p "$(echo -e "${YELLOW}Drive ${RED}$id${NOCOLOR} ${YELLOW}will be erased, wget, curl and p7zip will be installed
-do you wish to continue (y/n)? "${NOCOLOR})" yn
+  read -p "$(echo -e "Drive ${RED}$id${NOCOLOR} will be erased, wget, curl and p7zip will be installed
+do you wish to continue (y/n)? ")" yn
   case $yn in
     [Yy]* ) ImportantTools; partformat > /dev/null 2>&1 || :; burning; InstallOC; break;;
     [Nn]* ) exit;;
