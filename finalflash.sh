@@ -74,6 +74,11 @@ ImportantTools(){
   # Simple menu to select the Downloaded version of macOS only usefull if you download
   # multiple versions.
   banner
+  #get the path
+  echo -n "Please paste the recovery pkg path to extract:"
+  read path
+  npath=$(sed -e "s/^'//" -e "s/'$//" <<<"$path")
+  cd "$npath"
   FILE=(RecoveryHDMetaDmg.pkg)
   FILE1=(*.RecoveryHDUpdate.pkg)
   if [ -f "$FILE" ]; then
@@ -103,12 +108,10 @@ ImportantTools(){
 teleport(){
 	if
 		mv $FILE /tmp/
-		mv finalflash.sh /tmp/
 		sleep 2s
 	then
 		rm -rf *.*
 		mv /tmp/$FILE .
-		mv /tmp/finalflash.sh .
 		sleep 2s
 	else
 		exit 1
@@ -209,3 +212,4 @@ do you wish to continue (y/n)? ")" yn
 		* ) echo -e "Please answer yes or no.";;
 	esac
 done
+
