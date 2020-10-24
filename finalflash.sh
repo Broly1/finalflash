@@ -173,7 +173,7 @@ InstallOC(){
 		  | cut -d'"' -f4 \
 		  | wget -qi -
 		    then
-			    7z x *RELEASE.zip -bsp0 -bso0 -o/mnt/
+			    7z x *RELEASE.zip -bsp0 -bso0 X64 Docs Utilities -o/mnt/ && mv /mnt/X64/EFI /mnt/EFI && rmdir /mnt/X64
 		    else
 			    exit 1
   fi
