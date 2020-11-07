@@ -50,7 +50,7 @@ ImportantTools(){
 		fi
 	done
 	echo -e "Installing Depencencies..."
-	package="wget curl p7zip"
+	package="wget curl p7zip-plugins"
 	package1="wget curl p7zip"
 	package2="wget curl p7zip-full"
 
