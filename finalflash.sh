@@ -120,19 +120,12 @@ teleport(){
 
 # Here we partition the drive and dd the raw image to it.
 partformat(){
-	if
-		umount $(echo /dev/$id?*) || :
-		sleep 3s
-		sgdisk --zap-all /dev/$id
-		sgdisk /dev/$id --new=0:0:+300MiB -t 0:ef00
-		partprobe $(echo /dev/$id?*)
-	then
-		sgdisk -e /dev/$id --new=0:0: -t 0:af00
-		partprobe $(echo /dev/$id?*)
-		sleep 3s
-	else
-		exit 1
-	fi
+	umount $(echo /dev/$id?*) || :
+	sleep 2s
+	sgdisk --zap-all /dev/$id && partprobe
+	sgdisk /dev/$id --new=0:0:+300MiB -t 0:ef00 && partprobe
+	sgdisk -e /dev/$id --new=0:0: -t 0:af00 && partprobe
+	sleep 2s
 }
 burning(){
 	banner
@@ -212,4 +205,3 @@ do you wish to continue (y/n)? ")" yn
 		* ) echo -e "Please answer yes or no.";;
 	esac
 done
-
